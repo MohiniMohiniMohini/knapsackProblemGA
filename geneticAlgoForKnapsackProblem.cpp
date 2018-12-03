@@ -72,19 +72,7 @@ main()
 
 
     populationStructure g_population[POPULATION];
-    populationStructure g_topFiveCombinations[2];
     populationStructure g_bestCombination;
-
-    //initialize with all zeros
-    for(int i = 0; i < NUMBER_OF_ITEMS; i++)
-    {
-        g_bestCombination.listOfItems[i].value = 0;
-        g_bestCombination.listOfItems[i].weight = 0;
-    }
-
-    g_bestCombination.arrayIndex = 0;
-    g_bestCombination.totalWeight = 0;
-    g_bestCombination.totalValue = 0;
 
     for(int i = 0; i < POPULATION; i++)
     {
@@ -154,47 +142,20 @@ main()
             }
         }
 
-        cout << "best top 2 are:" << "\n";
-        cout << "    Value" << "\t" << "Weight\n";
-        //record best 5 combination
-        for(int i = 0; i < 2; i++)
-        {
-            cout << ""<< i << ".";
-            g_topFiveCombinations[i].totalWeight = g_population[i].totalWeight;
-            g_topFiveCombinations[i].totalValue = g_population[i].totalValue;
-            g_topFiveCombinations[i].arrayIndex = g_population[i].arrayIndex;
-
-            cout << "Items: " << g_topFiveCombinations[i].arrayIndex <<"\t" <<
-                "Weight: " <<g_topFiveCombinations[i].totalWeight << "\t" <<
-                "Value: " << g_topFiveCombinations[i].totalValue << "\n";
-
-            for(int j = 0; j < g_topFiveCombinations[i].arrayIndex; j++)
-            {
-                g_topFiveCombinations[i].listOfItems[j].value =
-                    g_population[i].listOfItems[j].value;
-                g_topFiveCombinations[i].listOfItems[j].weight =
-                    g_population[i].listOfItems[j].weight;
-                cout << "\t\t "<<g_topFiveCombinations[i].
-                    listOfItems[j].value << "\t";
-                cout << "\t "<< g_topFiveCombinations[i].
-                    listOfItems[j].weight << "\n";
-            }
-        }
-
         //record the best element
-        if(g_bestCombination.totalValue < g_topFiveCombinations[0].totalValue)
+        if(g_bestCombination.totalValue < g_population[0].totalValue)
         {
-            g_bestCombination.arrayIndex = g_topFiveCombinations[0].arrayIndex;
-            g_bestCombination.totalWeight = g_topFiveCombinations[0].totalWeight;
-            g_bestCombination.totalValue = g_topFiveCombinations[0].totalValue;
+            g_bestCombination.arrayIndex = g_population[0].arrayIndex;
+            g_bestCombination.totalWeight = g_population[0].totalWeight;
+            g_bestCombination.totalValue = g_population[0].totalValue;
             for(int i = 0; i < NUMBER_OF_ITEMS; i++)
             {
                 g_bestCombination.listOfItems[i].value =
-                    g_topFiveCombinations[0].listOfItems[i].value;
+                    g_population[0].listOfItems[i].value;
                 g_bestCombination.listOfItems[i].weight =
-                    g_topFiveCombinations[0].listOfItems[i].weight;
+                    g_population[0].listOfItems[i].weight;
                 g_bestCombination.listOfItems[i].token =
-                    g_topFiveCombinations[0].listOfItems[i].token;
+                    g_population[0].listOfItems[i].token;
             }
         }
 
