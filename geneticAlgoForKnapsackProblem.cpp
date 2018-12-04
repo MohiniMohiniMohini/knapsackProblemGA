@@ -3,10 +3,11 @@
 #include <iostream>
 #define NUMBER_OF_ITEMS 40
 #define POPULATION 10
-#define TOTAL_WEIGHT 200
+#define TOTAL_WEIGHT 500
 #define TRUE 1
 #define FALSE 0
-
+#define YES 1
+#define NO 0
 using namespace std;
 typedef struct
 {
@@ -30,14 +31,42 @@ int random_num(int start, int end)
     int random_int = start+(rand()%range);
     return random_int;
 }
-
+void printPopulation(populationStructure printMe)
+{
+    cout << "Total Value: " << printMe.totalValue <<
+        "\t" << "Total Weight: " << printMe.totalWeight << "\n";
+    cout << "\tValue" << "\t\t" << "Weight\t\t" << "Token\n";
+    for(int i = 0; i < printMe.arrayIndex; i ++)
+    {
+        cout << "\t" << printMe.listOfItems[i].value <<
+            "\t\t " << " " << printMe.listOfItems[i].weight <<
+            "\t\t " << " " << printMe.listOfItems[i].token << "\n";
+    }
+}
+void printPoolOfItems(structOfWeightAndValue printMe)
+{
+    cout << "\t" << printMe.value <<
+        "\t\t " << " " << printMe.weight <<
+        "\t\t " << " " << printMe.token << "\n";
+}
 main()
 {
-    int g_numberOfItems = 5; //random_num(25, 40);
+    int g_numberOfItems = random_num(12, 20);
     structOfWeightAndValue g_poolOfItems[g_numberOfItems];
 
+    for(int counter = 0; counter < g_numberOfItems; counter++)
+    {
+        g_poolOfItems[counter].token = counter + 1;
+        g_poolOfItems[counter].value = random_num(100, 1000);
+        g_poolOfItems[counter].weight = random_num(25, 150);
+    }
     cout << "Problem statement:\n";
-    cout << "Value" << "\t" << "Weight\n";
+    cout << "\tValue" << "\t\t" << "Weight\t\t" << "Token\n";
+    for(int i = 0; i < g_numberOfItems; i++)
+    {
+        printPoolOfItems(g_poolOfItems[i]);
+    }
+/*    cout << "Value" << "\t" << "Weight\n";
     //randomly generate the weight and value of items in the pool
 
     g_poolOfItems[0].value = 100;
@@ -70,7 +99,10 @@ main()
     cout << "" << g_poolOfItems[4].value << "\t" << "" <<
     g_poolOfItems[4].weight << "\n";
 
-
+    for(int i = 0; i < g_numberOfItems; i++)
+    {
+        printPoolOfItems(g_poolOfItems[i]);
+    }*/
     populationStructure g_population[POPULATION];
     populationStructure g_bestCombination;
 
@@ -82,18 +114,18 @@ main()
         while( (sumOfWeights <= TOTAL_WEIGHT) && (items < g_numberOfItems) )
         {
             int randomIndex = random_num(0, g_numberOfItems);
-            int isTokenUnique = FALSE;
+            int isTokenSame = NO;
             for(int checkTokenIndex = 0; checkTokenIndex < items;
                     checkTokenIndex++)
             {
                 if(g_population[i].listOfItems[checkTokenIndex].token ==
                         g_poolOfItems[randomIndex].token)
                 {
-                    isTokenUnique = TRUE;
+                    isTokenSame = YES;
                     break;
                 }
             }
-            if(isTokenUnique == FALSE)
+            if(isTokenSame == NO)
             {
                 g_population[i].listOfItems[items].value =
                     g_poolOfItems[randomIndex].value;
@@ -111,7 +143,7 @@ main()
         //since the total exceeds the maximum weight allowed,
         //remove the last item
         //And its subsequent summations from totals.
-        g_population[i].arrayIndex = (items+1);
+        g_population[i].arrayIndex = items;
         sumOfWeights -= g_population[i].listOfItems[items].weight;
         sumOfValues -= g_population[i].listOfItems[items].value;
         g_population[i].totalWeight = sumOfWeights;
@@ -121,11 +153,12 @@ main()
         {
             g_population[i].listOfItems[j].value = 0;
             g_population[i].listOfItems[j].weight = 0;
+            g_population[i].listOfItems[j].token = 0;
         }
     }
-    int loopCounter = 20;
+    int targetAchieved = 20;
 
-    while(loopCounter > 0)
+    while(targetAchieved != 0)
     {
         //sort the population
         for(int i = 0; i < POPULATION; i++)
@@ -145,18 +178,13 @@ main()
         //record the best element
         if(g_bestCombination.totalValue < g_population[0].totalValue)
         {
-            g_bestCombination.arrayIndex = g_population[0].arrayIndex;
-            g_bestCombination.totalWeight = g_population[0].totalWeight;
-            g_bestCombination.totalValue = g_population[0].totalValue;
-            for(int i = 0; i < NUMBER_OF_ITEMS; i++)
-            {
-                g_bestCombination.listOfItems[i].value =
-                    g_population[0].listOfItems[i].value;
-                g_bestCombination.listOfItems[i].weight =
-                    g_population[0].listOfItems[i].weight;
-                g_bestCombination.listOfItems[i].token =
-                    g_population[0].listOfItems[i].token;
-            }
+            g_bestCombination = g_population[0];
+            cout << "Best combination so far is:\n";
+            printPopulation(g_bestCombination);
+        }
+        else if(g_bestCombination.totalValue == g_population[0].totalValue)
+        {
+            targetAchieved--;
         }
 
         int startIndex = 10%POPULATION + 1;
@@ -172,23 +200,40 @@ main()
             {
                 int randomIndex = random_num(0, g_population[i].arrayIndex);
                 int randomMutation = random_num(0, g_numberOfItems - 1);
-                int isTokenRepeated = FALSE;
+                int isTokenSame = NO;
                 for(int checkTokenIndex = 0; checkTokenIndex < itemsAvailable;
                         checkTokenIndex++)
                 {
                     if(g_population[i].listOfItems[checkTokenIndex].token ==
                             g_poolOfItems[randomMutation].token)
                     {
-                        isTokenRepeated = TRUE;
+                        isTokenSame = YES;
                         break;
                     }
                 }
-                if(isTokenRepeated == FALSE)
+                if(isTokenSame == NO)
                 {
+                    //first substract the current value from the
+                    //total value
+                    g_population[i].totalValue -=
+                        g_population[i].listOfItems[randomIndex].value;
+                    //now replace the value with new value
                     g_population[i].listOfItems[randomIndex].value =
                         g_poolOfItems[randomMutation].value;
+                    //now update the total value with new value
+                    g_population[i].totalValue +=
+                        g_population[i].listOfItems[randomIndex].value;
+
+                    //do the same with weight
+                    //1. substract, 2.update weight and 3.update total weight
+                    g_population[i].totalWeight -=
+                        g_population[i].listOfItems[randomIndex].weight;
                     g_population[i].listOfItems[randomIndex].weight =
                         g_poolOfItems[randomMutation].weight;
+                    g_population[i].totalWeight +=
+                    g_population[i].listOfItems[randomIndex].weight;
+
+                    //update the token
                     g_population[i].listOfItems[randomIndex].token =
                         g_poolOfItems[randomMutation].token;
                     totalMutation++;
@@ -232,28 +277,22 @@ main()
             items--;
             //since the total exceeds the total, remove the last item
             //And its subsequent summations from totals.
-            g_population[i].arrayIndex = (items + 1);
+            g_population[i].arrayIndex = (items);
             sumOfWeights -= g_population[i].listOfItems[items].weight;
             sumOfValues -= g_population[i].listOfItems[items].value;
             g_population[i].totalWeight = sumOfWeights;
             g_population[i].totalValue = sumOfValues;
 
-            g_population[i].listOfItems[items].value = 0;
-            g_population[i].listOfItems[items].weight = 0;
+            for(int j = items; j < NUMBER_OF_ITEMS; j++)
+            {
+                g_population[i].listOfItems[items].value = 0;
+                g_population[i].listOfItems[items].weight = 0;
+                g_population[i].listOfItems[j].token = 0;
+            }
         }
-        loopCounter--;
     }
 
     cout << "The best combination is:\n";
-    cout << "Total Value: " << g_bestCombination.totalValue <<
-        "\t" << "Total Weight: " << g_bestCombination.totalWeight << "\n";
-    cout << "\t\tValue" << "\t\t" << "Weight\t\t" << "Token\n";
-    for(int i = 0; i < g_bestCombination.arrayIndex; i ++)
-    {
-        cout << "\t\t " << g_bestCombination.listOfItems[i].value <<
-            "\t\t " << " " << g_bestCombination.listOfItems[i].weight <<
-            "\t\t " << " " << g_bestCombination.listOfItems[i].token << "\n";
-    }
-
+    printPopulation(g_bestCombination);
 }
 
