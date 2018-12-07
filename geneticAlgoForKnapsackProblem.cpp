@@ -163,7 +163,7 @@ main()
             g_population[i].listOfItems[j].token = 0;
         }
     }
-    int targetAchieved = 20;
+    int targetAchieved = 100;
 
     while(targetAchieved != 0)
     {
@@ -187,8 +187,8 @@ main()
         if(g_bestCombination.totalValue < g_population[0].totalValue)
         {
             g_bestCombination = g_population[0];
-           // cout << "Best combination so far is:\n";
-           // printPopulation(g_bestCombination);
+            cout << "Best combination so far is:\n";
+            printPopulation(g_bestCombination);
         }
 /*        else if(g_bestCombination.totalValue == g_population[0].totalValue)
         {
@@ -254,6 +254,16 @@ main()
                 }
             }
         }
+        //check if mutation is successful
+        //if not discard bad combinations by zeroing the value
+        for(int i = 0; i < POPULATION; i++)
+        {
+            if(g_population[i].totalWeight > TOTAL_WEIGHT)
+            {
+                g_population[i].totalValue = 0;
+            }
+        }
+
         //discard last 10% of the population
         for(int i = discardIndex; i < POPULATION; i++)
         {
