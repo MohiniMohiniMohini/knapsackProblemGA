@@ -1,9 +1,11 @@
 #include <bits/stdc++.h>
 #include <string>
 #include <iostream>
+#include "standardMethodKnapsackProblem.hpp"
+
 #define NUMBER_OF_ITEMS 40
 #define POPULATION 10
-#define TOTAL_WEIGHT 500
+#define TOTAL_WEIGHT 200
 #define TRUE 1
 #define FALSE 0
 #define YES 1
@@ -51,22 +53,23 @@ void printPoolOfItems(structOfWeightAndValue printMe)
 }
 main()
 {
-    int g_numberOfItems = random_num(12, 20);
+//    srand(time(NULL));
+    int g_numberOfItems = 5;//random_num(12, 20);
     structOfWeightAndValue g_poolOfItems[g_numberOfItems];
-
+/*
     for(int counter = 0; counter < g_numberOfItems; counter++)
     {
         g_poolOfItems[counter].token = counter + 1;
         g_poolOfItems[counter].value = random_num(100, 1000);
         g_poolOfItems[counter].weight = random_num(25, 150);
     }
-    cout << "Problem statement:\n";
+    cout << "Problem statement with "<< g_numberOfItems << " elements is:\n";
     cout << "\tValue" << "\t\t" << "Weight\t\t" << "Token\n";
     for(int i = 0; i < g_numberOfItems; i++)
     {
         printPoolOfItems(g_poolOfItems[i]);
-    }
-/*    cout << "Value" << "\t" << "Weight\n";
+    }*/
+    cout << "Value" << "\t" << "Weight\n";
     //randomly generate the weight and value of items in the pool
 
     g_poolOfItems[0].value = 100;
@@ -98,7 +101,7 @@ main()
     g_poolOfItems[4].token = 5;
     cout << "" << g_poolOfItems[4].value << "\t" << "" <<
     g_poolOfItems[4].weight << "\n";
-
+/*
     for(int i = 0; i < g_numberOfItems; i++)
     {
         printPoolOfItems(g_poolOfItems[i]);
@@ -129,10 +132,13 @@ main()
             {
                 g_population[i].listOfItems[items].value =
                     g_poolOfItems[randomIndex].value;
+
                 g_population[i].listOfItems[items].weight =
                     g_poolOfItems[randomIndex].weight;
+
                 g_population[i].listOfItems[items].token =
                     g_poolOfItems[randomIndex].token;
+
                 sumOfWeights += g_population[i].listOfItems[items].weight;
                 sumOfValues += g_population[i].listOfItems[items].value;
                 items++;
@@ -146,8 +152,9 @@ main()
         g_population[i].arrayIndex = items;
         sumOfWeights -= g_population[i].listOfItems[items].weight;
         sumOfValues -= g_population[i].listOfItems[items].value;
+
         g_population[i].totalWeight = sumOfWeights;
-        g_population[i].totalValue = sumOfWeights;
+        g_population[i].totalValue = sumOfValues;
 
         for(int j = items; j < NUMBER_OF_ITEMS; j++)
         {
@@ -160,6 +167,7 @@ main()
 
     while(targetAchieved != 0)
     {
+        targetAchieved--;
         //sort the population
         for(int i = 0; i < POPULATION; i++)
         {
@@ -179,19 +187,21 @@ main()
         if(g_bestCombination.totalValue < g_population[0].totalValue)
         {
             g_bestCombination = g_population[0];
-            cout << "Best combination so far is:\n";
-            printPopulation(g_bestCombination);
+           // cout << "Best combination so far is:\n";
+           // printPopulation(g_bestCombination);
         }
-        else if(g_bestCombination.totalValue == g_population[0].totalValue)
+/*        else if(g_bestCombination.totalValue == g_population[0].totalValue)
         {
             targetAchieved--;
         }
+*/
+        int startIndex = 0.40 * POPULATION + 1;
+        int stopIndex = 0.90 * POPULATION;
+        int discardIndex = 0.90 * POPULATION + 1;
 
-        int startIndex = 10%POPULATION + 1;
-        int stopIndex = 90%POPULATION;
-        int discardIndex = 90%POPULATION + 1;
-
-        //mutate the top 90% population from 11% onwards
+        //retain 40% population
+        //mutate the next 50% population from 41% onwards
+        //Discard the last 10% of the population
         for(int i = startIndex; i < stopIndex; i++)
         {
             int totalMutation = 0;
@@ -217,9 +227,11 @@ main()
                     //total value
                     g_population[i].totalValue -=
                         g_population[i].listOfItems[randomIndex].value;
+
                     //now replace the value with new value
                     g_population[i].listOfItems[randomIndex].value =
                         g_poolOfItems[randomMutation].value;
+
                     //now update the total value with new value
                     g_population[i].totalValue +=
                         g_population[i].listOfItems[randomIndex].value;
@@ -228,8 +240,10 @@ main()
                     //1. substract, 2.update weight and 3.update total weight
                     g_population[i].totalWeight -=
                         g_population[i].listOfItems[randomIndex].weight;
+
                     g_population[i].listOfItems[randomIndex].weight =
                         g_poolOfItems[randomMutation].weight;
+
                     g_population[i].totalWeight +=
                     g_population[i].listOfItems[randomIndex].weight;
 
@@ -248,7 +262,7 @@ main()
             int items = 0;
             while((sumOfWeights <= TOTAL_WEIGHT) && (items < g_numberOfItems))
             {
-                int isTokenUnique = FALSE;
+                int isTokenSame = NO;
                 int randomIndex = random_num(0, g_numberOfItems);
                 for(int checkTokenIndex = 0; checkTokenIndex < items;
                         checkTokenIndex++)
@@ -256,11 +270,11 @@ main()
                     if(g_population[i].listOfItems[checkTokenIndex].token ==
                             g_poolOfItems[randomIndex].token)
                     {
-                        isTokenUnique = TRUE;
+                        isTokenSame = YES;
                         break;
                     }
                 }
-                if(isTokenUnique == FALSE)
+                if(isTokenSame == NO)
                 {
                     g_population[i].listOfItems[items].value =
                         g_poolOfItems[randomIndex].value;
@@ -277,7 +291,7 @@ main()
             items--;
             //since the total exceeds the total, remove the last item
             //And its subsequent summations from totals.
-            g_population[i].arrayIndex = (items);
+            g_population[i].arrayIndex = items;
             sumOfWeights -= g_population[i].listOfItems[items].weight;
             sumOfValues -= g_population[i].listOfItems[items].value;
             g_population[i].totalWeight = sumOfWeights;
@@ -285,8 +299,8 @@ main()
 
             for(int j = items; j < NUMBER_OF_ITEMS; j++)
             {
-                g_population[i].listOfItems[items].value = 0;
-                g_population[i].listOfItems[items].weight = 0;
+                g_population[i].listOfItems[j].value = 0;
+                g_population[i].listOfItems[j].weight = 0;
                 g_population[i].listOfItems[j].token = 0;
             }
         }
@@ -294,5 +308,12 @@ main()
 
     cout << "The best combination is:\n";
     printPopulation(g_bestCombination);
+
+    cout << "Solution to the same problem by standard method is:\n";
+
+    int n = g_numberOfItems / g_poolOfItems[0].value;
+    knapSack(TOTAL_WEIGHT, &g_poolOfItems[0].weight, &g_poolOfItems[0].value,
+            n);
+
 }
 
