@@ -5,7 +5,7 @@
 
 #define NUMBER_OF_ITEMS 40
 #define POPULATION 10
-#define TOTAL_WEIGHT 200
+#define TOTAL_WEIGHT 500
 #define TRUE 1
 #define FALSE 0
 #define YES 1
@@ -53,7 +53,7 @@ void printPoolOfItems(structOfWeightAndValue printMe)
 }
 main()
 {
-//    srand(time(NULL));
+    srand(time(NULL));
     int g_numberOfItems = random_num(10, 15);
     structOfWeightAndValue g_poolOfItems[g_numberOfItems];
 
@@ -164,7 +164,7 @@ main()
             g_population[i].listOfItems[j].token = 0;
         }
     }
-    int targetAchieved = 40;
+    int targetAchieved = 60;
 
     cout << "The 1st Gen Population is:\n";
     for(int i = 0; i < POPULATION; i++)
@@ -275,6 +275,17 @@ main()
         //discard last 10% of the population
         for(int i = discardIndex; i < POPULATION; i++)
         {
+            for(int j = 0; j < g_population[i].arrayIndex; j++)
+            {
+                g_population[i].listOfItems[j].value = 0;
+                g_population[i].listOfItems[j].weight = 0;
+                g_population[i].listOfItems[j].token = 0;
+            }
+
+            g_population[i].arrayIndex = 0;
+            g_population[i].totalValue = 0;
+            g_population[i].totalWeight = 0;
+
             int sumOfWeights = 0;
             int sumOfValues = 0;
             int items = 0;
