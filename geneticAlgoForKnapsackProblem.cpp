@@ -54,9 +54,9 @@ void printPoolOfItems(structOfWeightAndValue printMe)
 main()
 {
 //    srand(time(NULL));
-    int g_numberOfItems = 5;//random_num(12, 20);
+    int g_numberOfItems = random_num(10, 15);
     structOfWeightAndValue g_poolOfItems[g_numberOfItems];
-/*
+
     for(int counter = 0; counter < g_numberOfItems; counter++)
     {
         g_poolOfItems[counter].token = counter + 1;
@@ -68,7 +68,7 @@ main()
     for(int i = 0; i < g_numberOfItems; i++)
     {
         printPoolOfItems(g_poolOfItems[i]);
-    }*/
+    }/*
     cout << "Value" << "\t" << "Weight\n";
     //randomly generate the weight and value of items in the pool
 
@@ -101,13 +101,14 @@ main()
     g_poolOfItems[4].token = 5;
     cout << "" << g_poolOfItems[4].value << "\t" << "" <<
     g_poolOfItems[4].weight << "\n";
-/*
+
     for(int i = 0; i < g_numberOfItems; i++)
     {
         printPoolOfItems(g_poolOfItems[i]);
     }*/
     populationStructure g_population[POPULATION];
     populationStructure g_bestCombination;
+    g_bestCombination.totalValue = 0;
 
     for(int i = 0; i < POPULATION; i++)
     {
@@ -116,7 +117,7 @@ main()
         int items = 0;
         while( (sumOfWeights <= TOTAL_WEIGHT) && (items < g_numberOfItems) )
         {
-            int randomIndex = random_num(0, g_numberOfItems);
+            int randomIndex = random_num(0, g_numberOfItems-1);
             int isTokenSame = NO;
             for(int checkTokenIndex = 0; checkTokenIndex < items;
                     checkTokenIndex++)
@@ -163,8 +164,13 @@ main()
             g_population[i].listOfItems[j].token = 0;
         }
     }
-    int targetAchieved = 100;
+    int targetAchieved = 40;
 
+    cout << "The 1st Gen Population is:\n";
+    for(int i = 0; i < POPULATION; i++)
+    {
+        printPopulation(g_population[i]);
+    }
     while(targetAchieved != 0)
     {
         targetAchieved--;
@@ -187,14 +193,16 @@ main()
         if(g_bestCombination.totalValue < g_population[0].totalValue)
         {
             g_bestCombination = g_population[0];
-            cout << "Best combination so far is:\n";
-            printPopulation(g_bestCombination);
+        //    cout << "Best combination so far is:\n";
+        //    printPopulation(g_bestCombination);
         }
 /*        else if(g_bestCombination.totalValue == g_population[0].totalValue)
         {
             targetAchieved--;
         }
 */
+        cout << "Best combination so far is:\n";
+        printPopulation(g_bestCombination);
         int startIndex = 0.40 * POPULATION + 1;
         int stopIndex = 0.90 * POPULATION;
         int discardIndex = 0.90 * POPULATION + 1;
@@ -273,7 +281,7 @@ main()
             while((sumOfWeights <= TOTAL_WEIGHT) && (items < g_numberOfItems))
             {
                 int isTokenSame = NO;
-                int randomIndex = random_num(0, g_numberOfItems);
+                int randomIndex = random_num(0, g_numberOfItems-1);
                 for(int checkTokenIndex = 0; checkTokenIndex < items;
                         checkTokenIndex++)
                 {
