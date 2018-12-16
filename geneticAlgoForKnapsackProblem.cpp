@@ -4,7 +4,7 @@
 #include "standardMethodKnapsackProblem.hpp"
 
 #define NUMBER_OF_ITEMS 40
-#define POPULATION 10
+#define POPULATION 80
 #define TOTAL_WEIGHT 500
 #define TRUE 1
 #define FALSE 0
@@ -164,7 +164,7 @@ main()
             g_population[i].listOfItems[j].token = 0;
         }
     }
-    int targetAchieved = 60;
+    int targetAchieved = 40;
 
     cout << "The 1st Gen Population is:\n";
     for(int i = 0; i < POPULATION; i++)
@@ -193,16 +193,16 @@ main()
         if(g_bestCombination.totalValue < g_population[0].totalValue)
         {
             g_bestCombination = g_population[0];
-        //    cout << "Best combination so far is:\n";
-        //    printPopulation(g_bestCombination);
+            cout << "Best combination so far is:\n";
+            printPopulation(g_bestCombination);
         }
 /*        else if(g_bestCombination.totalValue == g_population[0].totalValue)
         {
             targetAchieved--;
         }
 */
-        cout << "Best combination so far is:\n";
-        printPopulation(g_bestCombination);
+//        cout << "Best combination so far is:\n";
+//        printPopulation(g_bestCombination);
         int startIndex = 0.40 * POPULATION + 1;
         int stopIndex = 0.90 * POPULATION;
         int discardIndex = 0.90 * POPULATION + 1;
@@ -335,14 +335,20 @@ main()
         }
     }
 
-    cout << "The best combination is:\n";
-    printPopulation(g_bestCombination);
+   // cout << "The best combination is:\n";
+   // printPopulation(g_bestCombination);
 
     cout << "Solution to the same problem by standard method is:\n";
 
-    int n = g_numberOfItems / g_poolOfItems[0].value;
-    knapSack(TOTAL_WEIGHT, &g_poolOfItems[0].weight, &g_poolOfItems[0].value,
-            n);
+    int weightArray[g_numberOfItems] = {0};
+    int valueArray[g_numberOfItems] = {0};
+    for(int i = 0; i < g_numberOfItems; i++)
+    {
+        weightArray[i] = g_poolOfItems[i].weight;
+        valueArray[i] = g_poolOfItems[i].value;
+    }
+    int n = (sizeof(valueArray) / sizeof(valueArray[0]));
+    knapSack(TOTAL_WEIGHT, weightArray, valueArray, n);
 
 }
 
