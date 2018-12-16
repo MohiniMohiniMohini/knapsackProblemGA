@@ -4,7 +4,7 @@
 #include "standardMethodKnapsackProblem.hpp"
 
 #define NUMBER_OF_ITEMS 40
-#define POPULATION 80
+#define POPULATION 1000
 #define TOTAL_WEIGHT 500
 #define TRUE 1
 #define FALSE 0
