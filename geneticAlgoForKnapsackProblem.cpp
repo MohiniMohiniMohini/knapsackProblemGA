@@ -164,16 +164,16 @@ main()
             g_population[i].listOfItems[j].token = 0;
         }
     }
-    int targetAchieved = 40;
-
-    cout << "The 1st Gen Population is:\n";
+    int targetAchieved = 0;
+    int generationsRequired = 0;
+    /*cout << "The 1st Gen Population is:\n";
     for(int i = 0; i < POPULATION; i++)
     {
         printPopulation(g_population[i]);
-    }
-    while(targetAchieved != 0)
+    }*/
+    while(1)
     {
-        targetAchieved--;
+        generationsRequired++;
         //sort the population
         for(int i = 0; i < POPULATION; i++)
         {
@@ -193,14 +193,18 @@ main()
         if(g_bestCombination.totalValue < g_population[0].totalValue)
         {
             g_bestCombination = g_population[0];
-            cout << "Best combination so far is:\n";
-            printPopulation(g_bestCombination);
+            //cout << "Best combination so far is:\n";
+            //printPopulation(g_bestCombination);
         }
-/*        else if(g_bestCombination.totalValue == g_population[0].totalValue)
+        else if(g_bestCombination.totalValue == g_population[0].totalValue)
         {
-            targetAchieved--;
+            targetAchieved++;
+            if(targetAchieved == 20)
+            {
+                break;
+            }
         }
-*/
+
 //        cout << "Best combination so far is:\n";
 //        printPopulation(g_bestCombination);
         int startIndex = 0.40 * POPULATION + 1;
@@ -335,8 +339,8 @@ main()
         }
     }
 
-   // cout << "The best combination is:\n";
-   // printPopulation(g_bestCombination);
+    cout << "The best combination with " << generationsRequired - targetAchieved << " generations is:\n";
+    printPopulation(g_bestCombination);
 
     cout << "Solution to the same problem by standard method is:\n";
 

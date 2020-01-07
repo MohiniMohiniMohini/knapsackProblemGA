@@ -23,9 +23,20 @@ void knapSack(int W, int wt[], int val[], int n)
 				K[i][w] = K[i-1][w];
 	    }
     }
+    
+    /*for (i = 0; i <= n; i++)
+    {
+        for (w = 0; w <= W; w++)
+	    {
+            printf("%d,", K[i][w]);
+        }
+        printf("\n");
+    }*/
+    
     // stores the result of Knapsack
     int res = K[n][W];
-    printf("Total Value is: %d\n", res);
+    int totalWeight = 0;
+    int totalValue = res;
     printf("Weight Value\n");
 
     w = W;
@@ -48,7 +59,10 @@ void knapSack(int W, int wt[], int val[], int n)
             // value is deducted
             res = res - val[i - 1];
             w = w - wt[i - 1];
+            totalWeight += wt[i - 1];
         }
     }
+    printf("Total Value is: %d\n", totalValue);
+    printf("Total weight is: %d\n", totalWeight);
     printf("\n");
 }
