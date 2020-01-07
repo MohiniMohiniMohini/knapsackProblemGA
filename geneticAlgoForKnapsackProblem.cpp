@@ -35,15 +35,16 @@ int random_num(int start, int end)
 }
 void printPopulation(populationStructure printMe)
 {
-    cout << "Total Value: " << printMe.totalValue <<
-        "\t" << "Total Weight: " << printMe.totalWeight << "\n";
-    cout << "\tValue" << "\t\t" << "Weight\t\t" << "Token\n";
+    cout << "\tWeight" << "\t\t" << "Value\t\t" << "Token\n";
     for(int i = 0; i < printMe.arrayIndex; i ++)
     {
-        cout << "\t" << printMe.listOfItems[i].value <<
-            "\t\t " << " " << printMe.listOfItems[i].weight <<
+        cout << "\t" << printMe.listOfItems[i].weight <<
+            "\t\t " << " " << printMe.listOfItems[i].value <<
             "\t\t " << " " << printMe.listOfItems[i].token << "\n";
     }
+    cout << "Number of items selected are: " << printMe.arrayIndex << "\n" <<
+    "Total Value is: " << printMe.totalValue <<
+        "\n" << "Total Weight is: " << printMe.totalWeight << "\n";
 }
 void printPoolOfItems(structOfWeightAndValue printMe)
 {
@@ -339,10 +340,33 @@ main()
         }
     }
 
-    cout << "The best combination with " << generationsRequired - targetAchieved << " generations is:\n";
+    //sort the results wrt weights
+    for(int i = 0; i < g_bestCombination.arrayIndex; i ++)
+    {
+        for(int j = i + 1; j < g_bestCombination.arrayIndex; ++j)
+        {
+            if(g_bestCombination.listOfItems[i].weight > g_bestCombination.listOfItems[j].weight) 
+            {
+                int temp = 0;
+            
+                temp =  g_bestCombination.listOfItems[i].weight;
+                g_bestCombination.listOfItems[i].weight = g_bestCombination.listOfItems[j].weight;
+                g_bestCombination.listOfItems[j].weight = temp;
+                
+                temp =  g_bestCombination.listOfItems[i].value;
+                g_bestCombination.listOfItems[i].value = g_bestCombination.listOfItems[j].value;
+                g_bestCombination.listOfItems[j].value = temp;
+                
+                temp =  g_bestCombination.listOfItems[i].token;
+                g_bestCombination.listOfItems[i].token = g_bestCombination.listOfItems[j].token;
+                g_bestCombination.listOfItems[j].token = temp;
+            }
+        }
+    }
+    cout << "\n\nThe best combination with " << generationsRequired - targetAchieved << " generation(s) is:\n";
     printPopulation(g_bestCombination);
 
-    cout << "Solution to the same problem by standard method is:\n";
+    cout << "\n\nSolution to the same problem by standard method is:\n";
 
     int weightArray[g_numberOfItems] = {0};
     int valueArray[g_numberOfItems] = {0};
