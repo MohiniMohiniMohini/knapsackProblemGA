@@ -4,7 +4,7 @@
 #include "standardMethodKnapsackProblem.hpp"
 
 #define NUMBER_OF_ITEMS 40
-#define POPULATION 1000
+#define POPULATION 100
 #define TOTAL_WEIGHT 500
 #define TRUE 1
 #define FALSE 0
@@ -45,5 +45,6 @@ class geneticAlgoForKnapsackProblem
     populationStructure g_bestCombination;
     int g_numberOfItems;
     structOfWeightAndValue *g_poolOfItems;
+    bool printMutation = true;
     
 };

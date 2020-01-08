@@ -63,7 +63,6 @@ void geneticAlgoForKnapsackProblem::mutate()
 {
     int startIndex = 0.40 * POPULATION + 1;
     int stopIndex = 0.90 * POPULATION;
-    int discardIndex = stopIndex + 1;
 
     //retain 40% population
     //mutate the next 50% population from 41% onwards
@@ -74,7 +73,7 @@ void geneticAlgoForKnapsackProblem::mutate()
         int itemsAvailable = g_population[i].arrayIndex;
         while(totalMutation != 2)
         {
-            int randomIndex = random_num(0, g_population[i].arrayIndex);
+            int randomIndex = random_num(0, itemsAvailable);
             int randomMutation = random_num(0, g_numberOfItems - 1);
             int isTokenSame = NO;
             for(int checkTokenIndex = 0; checkTokenIndex < itemsAvailable;
@@ -84,39 +83,56 @@ void geneticAlgoForKnapsackProblem::mutate()
                         g_poolOfItems[randomMutation].token)
                 {
                     isTokenSame = YES;
-                    break;
+                    //break;
                 }
             }
             if(isTokenSame == NO)
             {
                 //first substract the current value from the
-                //total value
-                g_population[i].totalValue -=
-                    g_population[i].listOfItems[randomIndex].value;
+                
+                
+                int tempTotVl = g_population[i].totalValue;
+                int tempTotWt = g_population[i].totalWeight;
+                int tempValue = g_population[i].listOfItems[randomIndex].value;
+                int tempWeight = g_population[i].listOfItems[randomIndex].weight;
+                int tempToken = g_population[i].listOfItems[randomIndex].token;
+                
+                //re-compute total value = curentTotalVal - currVal + newVal
+                g_population[i].totalValue =
+                    g_population[i].totalValue - 
+                    g_population[i].listOfItems[randomIndex].value +
+                    g_poolOfItems[randomMutation].value;
 
                 //now replace the value with new value
                 g_population[i].listOfItems[randomIndex].value =
                     g_poolOfItems[randomMutation].value;
 
-                //now update the total value with new value
-                g_population[i].totalValue +=
-                    g_population[i].listOfItems[randomIndex].value;
-
                 //do the same with weight
-                //1. substract 2.update weight and 3.update total weight
-                g_population[i].totalWeight -=
-                    g_population[i].listOfItems[randomIndex].weight;
+                //1.update total weight and 2.update total weight
+                g_population[i].totalWeight =
+                    g_population[i].totalWeight - 
+                    g_population[i].listOfItems[randomIndex].weight +
+                    g_poolOfItems[randomMutation].weight;
 
                 g_population[i].listOfItems[randomIndex].weight =
                     g_poolOfItems[randomMutation].weight;
-
-                g_population[i].totalWeight +=
-                g_population[i].listOfItems[randomIndex].weight;
 
                 //update the token
                 g_population[i].listOfItems[randomIndex].token =
                     g_poolOfItems[randomMutation].token;
                 totalMutation++;
+                
+                if(printMutation == true)
+                {
+                    printMutation = false;
+                    cout << "Mutate\n";
+                    cout << "\t\tbefore mutation  after mutation\n";
+                    cout << "Total value:\t " << tempTotVl << "\t\t" <<  g_population[i].totalValue << "\n";
+                    cout << "Total weight:\t " << tempTotWt << "\t\t" << g_population[i].totalWeight << "\n";
+                    cout << "Value:\t\t " << tempValue << "\t\t" << g_population[i].listOfItems[randomIndex].value << "\n";
+                    cout << "Weight:\t\t " << tempWeight << "\t\t" << g_population[i].listOfItems[randomIndex].weight << "\n";
+                    cout << "Token:\t\t " << tempToken << "\t\t" << g_population[i].listOfItems[randomIndex].token << "\n";
+                }
             }
         }
     }
@@ -132,7 +148,7 @@ void geneticAlgoForKnapsackProblem::initNewMembers(int startIndex, int stopIndex
         while( (sumOfWeights <= TOTAL_WEIGHT) && (items < g_numberOfItems) )
         {
             int randomIndex = random_num(0, g_numberOfItems-1);
-            int isTokenSame = NO;
+            bool isTokenSame = NO;
             //when randomly choosing from the pool, same item could be 
             //picked up twice. To avoid that, check the token before selecting 
             //any item randomly.
@@ -166,17 +182,24 @@ void geneticAlgoForKnapsackProblem::initNewMembers(int startIndex, int stopIndex
         }
 
         items--;
-        //since the total exceeds the maximum weight allowed,
-        //remove the last item
-        //And its subsequent summations from totals.
-        g_population[i].arrayIndex = items;
-        sumOfWeights -= g_population[i].listOfItems[items].weight;
-        sumOfValues -= g_population[i].listOfItems[items].value;
+        if(items == g_numberOfItems - 1)
+        {
+            //do nothing when maz number of items allowed condition is reached.
+        }
+        else
+        {
+            //since the total exceeds the maximum weight allowed,
+            //remove the last item
+            //And its subsequent summations from totals.
+            g_population[i].arrayIndex = items;
+            sumOfWeights -= g_population[i].listOfItems[items].weight;
+            sumOfValues -= g_population[i].listOfItems[items].value;
 
-        g_population[i].totalWeight = sumOfWeights;
-        g_population[i].totalValue = sumOfValues;
-
-        //reset the reset of the values to 0
+            g_population[i].totalWeight = sumOfWeights;
+            g_population[i].totalValue = sumOfValues;
+        }
+        
+        //reset the rest of the values to 0
         for(int j = items; j < NUMBER_OF_ITEMS; j++)
         {
             g_population[i].listOfItems[j].value = 0;
@@ -185,6 +208,7 @@ void geneticAlgoForKnapsackProblem::initNewMembers(int startIndex, int stopIndex
         }
     }
 }
+
 main()
 {
     srand(time(NULL));
@@ -257,6 +281,7 @@ main()
     while(1)
     {
         generationsRequired++;
+        //cout << "\n\n **************Generation: " << generationsRequired << "**************\n";
         
         knapsack.sortThePopulation();
 
@@ -264,22 +289,25 @@ main()
         if(knapsack.g_bestCombination.totalValue < knapsack.g_population[0].totalValue)
         {
             knapsack.g_bestCombination = knapsack.g_population[0];
+            //print the population after sort
+            /*for(int i = 0; i < POPULATION; i++)
+            {
+                knapsack.printPopulation(knapsack.g_population[i]);
+            }*/
             //cout << "Best combination so far is:\n";
-            //printPopulation(g_bestCombination);
+            //knapsack.printPopulation(knapsack.g_bestCombination);
         }
         else if(knapsack.g_bestCombination.totalValue == knapsack.g_population[0].totalValue)
         {
             targetAchieved++;
-            if(targetAchieved == 20)
+            if(targetAchieved == 200)
             {
                 break;
             }
         }
 
-//        cout << "Best combination so far is:\n";
-//        printPopulation(g_bestCombination);
-        
         //mutate the population
+        
         knapsack.mutate();
 
         //check if mutation is successful
@@ -305,19 +333,17 @@ main()
         {
             if(knapsack.g_bestCombination.listOfItems[i].weight > knapsack.g_bestCombination.listOfItems[j].weight) 
             {
-                int temp = 0;
-            
-                temp =  knapsack.g_bestCombination.listOfItems[i].weight;
-                knapsack.g_bestCombination.listOfItems[i].weight = knapsack.g_bestCombination.listOfItems[j].weight;
-                knapsack.g_bestCombination.listOfItems[j].weight = temp;
+                structOfWeightAndValue temp = knapsack.g_bestCombination.listOfItems[i];
+                knapsack.g_bestCombination.listOfItems[i] = knapsack.g_bestCombination.listOfItems[j];
+                knapsack.g_bestCombination.listOfItems[j] = temp;
                 
-                temp =  knapsack.g_bestCombination.listOfItems[i].value;
+                /*temp =  knapsack.g_bestCombination.listOfItems[i].value;
                 knapsack.g_bestCombination.listOfItems[i].value = knapsack.g_bestCombination.listOfItems[j].value;
                 knapsack.g_bestCombination.listOfItems[j].value = temp;
                 
                 temp =  knapsack.g_bestCombination.listOfItems[i].token;
                 knapsack.g_bestCombination.listOfItems[i].token = knapsack.g_bestCombination.listOfItems[j].token;
-                knapsack.g_bestCombination.listOfItems[j].token = temp;
+                knapsack.g_bestCombination.listOfItems[j].token = temp;*/
             }
         }
     }
